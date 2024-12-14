@@ -1,14 +1,22 @@
 import React from 'react'
 import axios from "axios";
+// import { getRefreshComplete } from '../routes/Completed';
 
 function CompletedComponent(props) {
     const handleRemove = async () => {
-      console.log(props.completedId," and ", props.todoId)
         try {
-          const response = await axios.delete(`http://localhost:8081/todo/completed`, {
+          const response = await axios.delete(`http://localhost:8081/todo/completed`,{
             data: { completedId: props.completedId, todoId : props.todoId },
-            withCredentials: true,
+            // headers: {
+            //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            //   "Content-Type": 'application/json',
+            // }
+            withCredentials: true
           });
+           if(response.status == 200){
+            // getRefreshComplete(props.setcompletedTodos, props.setToggle, toggle);
+            props.setToggle(!props.toggle);
+           }
           
         } catch (error) {
         }
@@ -16,11 +24,11 @@ function CompletedComponent(props) {
 
   return (
     <>
-        <div className="border-2 border-solid border-custom-darkBlue w-full h-32 my-3 flex flex-col p-3">
+        <div className="border-2 border-solid border-custom-darkBlue w-full md:h-32 my-3 flex flex-col p-3">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-bold">{props.name}</h3>
+            <h3 className="text-lg font-bold break-words overflow-hidden">{props.name}</h3>
           </div>
-          <p className="text-sm text-gray-700 mt-2">{props.content}</p>
+          <p className="text-sm text-gray-700 mt-2  break-words overflow-hidden">{props.content}</p>
 
           <div className="flex justify-end mt-auto">
             <button

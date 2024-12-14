@@ -1,8 +1,12 @@
 package com.ubedpathan.TodoApp.service;
 
 import com.ubedpathan.TodoApp.DTOs.UserDTO;
+import com.ubedpathan.TodoApp.entity.CompletedEntity;
+import com.ubedpathan.TodoApp.entity.TodoEntries;
 import com.ubedpathan.TodoApp.entity.UserEntity;
 import com.ubedpathan.TodoApp.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,9 +15,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -60,6 +67,70 @@ public class UserService {
             }
         }catch(Exception e){
             return "fail";
+        }
+    }
+
+    public void saveUserTodoEntry(UserEntity user){
+        userRepository.save(user);
+    }
+
+    public List<TodoEntries> getUserTodos(String userName) {
+        try {
+            UserEntity userData = userRepository.findByUsername(userName);
+            if (userData != null){
+                return userData.getTodoEntriesList();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Error retrieving user todos", e);
+            return null;
+        }
+    }
+
+    public UserEntity getUserByUserName(String userName){
+        return userRepository.findByUsername(userName);
+    }
+
+    public boolean saveUserCompleteTodoEntry(ObjectId id,String userName, CompletedEntity completedTodo) {
+        UserEntity userData = userRepository.findByUsername(userName);
+        if(userData != null){
+            try{
+                userData.getCompletedEntitiesList().add(completedTodo);
+                userData.getTodoEntriesList().removeIf(x -> x.getId().equals(id));
+                userRepository.save(userData);
+                return true;
+            } catch (Exception e) {
+                log.error("Error", e);
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public List<CompletedEntity> userCompletedTodo(String userName) {
+        UserEntity userData = userRepository.findByUsername(userName);
+        if(userData != null) {
+            return userData.getCompletedEntitiesList();
+        }
+        else{
+            return null;
+        }
+    }
+
+    public boolean deleteCompletedTodo(ObjectId completedId, String userName) {
+        try{
+            UserEntity userEntity = userRepository.findByUsername(userName);
+            List<CompletedEntity> userCompletedEntities = userEntity.getCompletedEntitiesList();
+            userCompletedEntities.removeIf(x -> x.getId().equals(completedId));
+            userRepository.save(userEntity);
+            return true;
+        }
+        catch (Exception e){
+            log.info("Error", e);
+            return false;
         }
     }
 }

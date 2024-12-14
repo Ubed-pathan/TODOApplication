@@ -4,6 +4,7 @@
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.context.annotation.Bean;
     import org.springframework.context.annotation.Configuration;
+    import org.springframework.http.HttpMethod;
     import org.springframework.security.authentication.AuthenticationManager;
     import org.springframework.security.authentication.AuthenticationProvider;
     import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -21,6 +22,11 @@
     import org.springframework.security.web.SecurityFilterChain;
     import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
     import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+    import org.springframework.web.cors.CorsConfiguration;
+    import org.springframework.web.cors.CorsConfigurationSource;
+    import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+    import java.util.List;
 
     @Configuration
     @EnableWebSecurity
@@ -52,16 +58,32 @@
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+//            http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
+
             // Order of rules matters: define permitAll() paths first
-            return http.authorizeHttpRequests(request -> request
+            return http.cors(cors -> cors.configurationSource(corsConfigurationSource())).authorizeHttpRequests(request -> request
                             .requestMatchers("/user/**").permitAll()
-                            .requestMatchers("/home/**", "/completed/**").authenticated()
+                            .requestMatchers( "/home/**","/completed/**").authenticated()
                             .anyRequest().authenticated())
 //                    .httpBasic(Customizer.withDefaults())
                     // by default user authentication handle by UsernamePasswordAuthenticationFilter.class this class but here we providing our own jwt filter so it work after jwtFilter
                     .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                     .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for testing
                     .build();
+        }
+
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOrigins(List.of("http://localhost:2121"));
+            configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+            configuration.setExposedHeaders(List.of("Authorization"));
+            configuration.setAllowCredentials(true);
+
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration("/**", configuration);
+            return source;
         }
 
 //        @Bean

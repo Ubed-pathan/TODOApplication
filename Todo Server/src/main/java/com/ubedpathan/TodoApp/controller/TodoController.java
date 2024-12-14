@@ -7,6 +7,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -21,22 +23,32 @@ public class TodoController {
     private TodoService todoService;
 
     @GetMapping
-    private ResponseEntity<?> getAllTodos(){
-        List<TodoEntries> allTodos = todoService.getAllTodos();
-        return new ResponseEntity<>(allTodos, HttpStatus.OK);
+    private ResponseEntity<?> getUserTodos(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        List<TodoEntries> userTodos = todoService.getUserTodos(userName);
+        if (!userTodos.isEmpty()) {
+            return new ResponseEntity<>(userTodos, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("No todos found for the user", HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
     private ResponseEntity<String> addTodo(@RequestBody TodoEntries todoEntries){
         if((todoEntries.getTitle() != null && todoEntries.getTitle() != "") && (todoEntries.getContent() != null && todoEntries.getContent() != "")){
-            String response = todoService.addTodos(todoEntries);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
+            String response = todoService.addTodos(todoEntries, userName);
+            if(response != null){
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Error", HttpStatus.BAD_REQUEST);
+            }
         }
         else{
             return new ResponseEntity<>("Please Fill all information", HttpStatus.OK);
         }
-
-
     }
 
     @PutMapping
@@ -62,7 +74,9 @@ public class TodoController {
     @DeleteMapping
     private ResponseEntity<?> deleteTodo(@RequestBody Map<String, ObjectId> id) {
         if(id != null){
-            boolean data = todoService.deleteTodoById(id.get("id"));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
+            boolean data = todoService.deleteTodoById(id.get("id"), userName);
             if(data) {
                 return new ResponseEntity<>(HttpStatus.OK);
 

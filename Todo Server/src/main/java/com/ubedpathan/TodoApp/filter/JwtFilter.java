@@ -15,8 +15,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.context.ApplicationContext;
-
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -30,17 +31,34 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     ApplicationContext context;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String username = null;
+        @Override
+        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+//            String authHeader = request.getHeader("Authorization");
+            String token = null;
+            String username = null;
+            String requestURI = request.getRequestURI();
+            // this below code for if user has old cookie but he want to signin again then it can allow resignin
+            if ("/todo/user/signin".equals(requestURI)) {
+                filterChain.doFilter(request, response);
+            }
+//            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//                token = authHeader.substring(7);
+//                username = jwtService.extractUserName(token);
+//            }
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            username = jwtService.extractUserName(token);
-        }
+            // this below code for cookie
+            if (request.getCookies() != null) {
+                for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                    if ("log".equals(cookie.getName())) {
+                        token = URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
+                        break;
+                    }
+                }
+            }
 
+            if (token != null) {
+                username = jwtService.extractUserName(token);
+            }
         //SecurityContextHolder.getContext().getAuthentication() == null this is checking for user already authenticated
         // remember when user request then for each request on thread assign to that request until response to user. this whole code executed for each request mean user request to server ther utill user response to user only for this duration user data stored into security context after response send to user security context for perticular thread is cleared
         //if user makes one request, for that request user data stored into security context and when server response then security context clear for that request thread and if user make another request immediately then again assign new thread for that request

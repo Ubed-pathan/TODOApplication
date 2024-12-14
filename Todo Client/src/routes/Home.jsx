@@ -1,10 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import TodoComponent from '../component/TodoComponent'
+import { useRecoilValue } from 'recoil';
+import { authState } from '../Atoms';
+
+// export const getRefreshData = (setTodos, setToggle, toggle) =>{
+//   axios.get('http://localhost:8081/todo/home', {
+//     // headers: {
+//     //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+//     //   "Content-Type": 'application/json',
+//     // }
+//     withCredentials: true
+//   })
+//     .then(response => {
+//       setTodos(response.data);
+//       setToggle(!toggle);
+//     })
+//     .catch(error => {
+//       console.error('Error fetching todos:', error);
+//     }
+//     )
+// }
 
 function Home() {
   const [todos, setTodos] = useState([]);
   const [added, setAdded] = useState(false)
+  const auth = useRecoilValue(authState)
+  const [toggle ,setToggle] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     content: ''
@@ -18,24 +40,37 @@ function Home() {
     }));
   };
 
+
   useEffect(() => {
-    axios.get('http://localhost:8081/todo/home')
+    // getRefreshData(setTodos, setToggle, toggle);
+
+    axios.get('http://localhost:8081/todo/home', {
+      // headers: {
+      //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      //   "Content-Type": 'application/json',
+      // }
+      withCredentials: true
+    })
       .then(response => {
         setTodos(response.data);
       })
-      .catch(error => {
-        console.error('Error fetching todos:', error);
+      .catch(() => {
+        setTodos('');
       }
       )
-  }, [todos]);
+  }, [toggle]);
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
-
     try {
       const response = await axios.post('http://localhost:8081/todo/home', formData, 
         {
-          withCredentials: true 
+          // headers: {
+          //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          //   "Content-Type": 'application/json',
+          // }
+            withCredentials: true
         }
       );
       if(response.status = 200){
@@ -44,23 +79,22 @@ function Home() {
           content: ''
         });
         setAdded(true);
-
+        setToggle(!toggle);
         setTimeout(() => {
           setAdded(false)
         }, 1000);
       }
     }
     catch(err) {
-      console.log(err);
     }
   }
   return (
     <>
       <div className=' flex flex-row justify-center mt-28 min-h-screen'>
-        <div className='w-1/2 flex flex-col items-center'>
-
+        <div className='md:w-1/2 w-[90%] flex flex-col items-center'>
+          <h1 className='text-custom-blue md:text-3xl text-xl my-5'>Hello! {auth.userName}</h1>
           <div className='w-full'>
-            <form onSubmit={handleSubmit} className="w-full bg-white p-6 rounded-lg shadow-md space-y-4">
+            <form onSubmit={handleSubmit} className="w-full bg-white p-6 rounded-lg shadow-md space-y-4 ">
               
               <div className="flex flex-row justify-center">
               {added ? (
@@ -116,14 +150,26 @@ function Home() {
           </div>
           <div className='text-custom-red text-2xl font-medium mt-10'> TODO LIST</div>
           <hr className="border-t-2 w-1/2 border-custom-red pb-10" />
+          {/* <>
+          <TodoComponent key={1} id={1} name="Quick Tasks" content="Jot down and complete simple tasks that take five minutes or less."/>
+          </> */}
+          
 
-          {todos.map((todo, index) => (
+        {todos.length == 0 ?(
+          <p>No todos yet !</p>
+        ):(
+          todos.map((todo, index) => (
             <TodoComponent
               key={todo.id}
               id={todo.id}
               name={todo.title}
-              content={todo.content} />
-          ))}
+              content={todo.content}
+              setTodos={setTodos} 
+              setToggle={setToggle}
+              toggle={toggle} />
+          ))
+        )}
+
         </div>
       </div>
     </>
