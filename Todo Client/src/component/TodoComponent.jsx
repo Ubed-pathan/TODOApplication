@@ -31,7 +31,7 @@ function TodoComponent(props) {
   const handleSave = async () => {
     try {
       const response = await axios.put(
-        `http://localhost:8081/todo/home`,
+        `${import.meta.env.VITE_SERVER_API}/todo/home`,
         { id: props.id, title: editFormData.title, content: editFormData.content },
         {
           // headers: {
@@ -58,7 +58,7 @@ function TodoComponent(props) {
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`http://localhost:8081/todo/home`, {
+      const response = await axios.delete(`${import.meta.env.VITE_SERVER_API}/todo/home`, {
         data: { id: props.id },
           // headers: {
           //   Authorization: `Bearer ${token}`
@@ -75,7 +75,7 @@ function TodoComponent(props) {
   const handleComplete = async () => {
     try {
       const response = await axios.put(
-        `http://localhost:8081/todo/completed/${props.id}`,
+        `${import.meta.env.VITE_SERVER_API}/todo/completed/${props.id}`,
         {},
          {
         //headers: {

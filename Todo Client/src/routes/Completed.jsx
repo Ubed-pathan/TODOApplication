@@ -3,7 +3,7 @@
     import CompletedComponent from '../component/CompletedComponent';
 
     // export const getRefreshComplete = (setcompletedTodos, setToggle, toggle) => {
-    //     axios.get('http://localhost:8081/todo/completed', {
+    //     axios.get(`${process.env.SERVER_API}/todo/completed`, {
     //         // headers: {
     //         //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,
     //         //   "Content-Type": 'application/json',
@@ -26,7 +26,7 @@
 
         useEffect(() => {
             // getRefreshComplete(setcompletedTodos, setToggle, toggle);
-            axios.get('http://localhost:8081/todo/completed', {
+            axios.get(`${import.meta.env.VITE_SERVER_API}/todo/completed`, {
                 // headers: {
                 //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,
                 //   "Content-Type": 'application/json',

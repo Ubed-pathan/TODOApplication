@@ -5,7 +5,7 @@ import axios from "axios";
 function CompletedComponent(props) {
     const handleRemove = async () => {
         try {
-          const response = await axios.delete(`http://localhost:8081/todo/completed`,{
+          const response = await axios.delete(`${import.meta.env.VITE_SERVER_API}/todo/completed`,{
             data: { completedId: props.completedId, todoId : props.todoId },
             // headers: {
             //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,

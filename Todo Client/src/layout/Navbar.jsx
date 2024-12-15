@@ -12,7 +12,7 @@ function Navbar() {
   const setAuthState = useSetRecoilState(authState);
 
   async function handleLogout(){
-    const response = await axios.post("http://localhost:8081/todo/user/logout",{},{
+    const response = await axios.post(`${import.meta.env.VITE_SERVER_API}/todo/user/logout`,{},{
         withCredentials: true
     })
     if(response.status == 200){

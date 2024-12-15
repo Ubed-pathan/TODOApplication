@@ -2,6 +2,7 @@
 
     import com.ubedpathan.TodoApp.filter.JwtFilter;
     import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.beans.factory.annotation.Value;
     import org.springframework.context.annotation.Bean;
     import org.springframework.context.annotation.Configuration;
     import org.springframework.http.HttpMethod;
@@ -72,10 +73,12 @@
                     .build();
         }
 
+        @Value("${FRONTEND_URL}")
+        private String frontendUrl;
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(List.of("http://localhost:2121"));
+            configuration.setAllowedOrigins(List.of(frontendUrl));
             configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
             configuration.setExposedHeaders(List.of("Authorization"));

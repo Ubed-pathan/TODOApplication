@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { authState } from '../Atoms';
 
 // export const getRefreshData = (setTodos, setToggle, toggle) =>{
-//   axios.get('http://localhost:8081/todo/home', {
+//   axios.get(`${process.env.SERVER_API}/todo/home`, {
 //     // headers: {
 //     //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,
 //     //   "Content-Type": 'application/json',
@@ -44,7 +44,7 @@ function Home() {
   useEffect(() => {
     // getRefreshData(setTodos, setToggle, toggle);
 
-    axios.get('http://localhost:8081/todo/home', {
+    axios.get(`${import.meta.env.VITE_SERVER_API}/todo/home`, {
       // headers: {
       //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       //   "Content-Type": 'application/json',
@@ -64,7 +64,7 @@ function Home() {
     
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8081/todo/home', formData, 
+      const response = await axios.post(`${import.meta.env.VITE_SERVER_API}/todo/home`, formData, 
         {
           // headers: {
           //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,

@@ -31,7 +31,7 @@ function MainApp() {
   useEffect(() => {
     async function checkLoginStatus() {
       try {
-        const response = await axios.get("http://localhost:8081/todo/user/status", {
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_API}/todo/user/status`, {
           withCredentials: true,
         });
         if (response.status === 200) {
