@@ -19,6 +19,7 @@ function SignUp() {
     }
 
     async function handleSignUp(e) {
+        console.log("Signup",import.meta.env.VITE_SERVER_API)
         e.preventDefault();
         const response = await axios.post(`${import.meta.env.VITE_SERVER_API}/todo/user/signup`, signUpData);
         if (response.status === 200) {

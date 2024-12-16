@@ -22,6 +22,7 @@ function SignIn() {
 
     async function handleSignIn(e) {
         e.preventDefault();
+        console.log("Signin",import.meta.env.VITE_SERVER_API)
         const response = await axios.post(`${import.meta.env.VITE_SERVER_API}/todo/user/signin`, signInData,{
             withCredentials : true
         });
