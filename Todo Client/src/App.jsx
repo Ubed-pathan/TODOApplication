@@ -8,6 +8,7 @@ import Completed from './routes/Completed';
 import SignUp from './routes/SignUp';
 import SignIn from './routes/SignIn';
 import axios from 'axios';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ProtectedRoute({ element, isLoggedIn }) {
   return isLoggedIn ? element : <Navigate to="/SignIn" />;
@@ -52,7 +53,9 @@ function MainApp() {
   }, [setAuthState]);
 
   if (isLoading) {
-    return <div className="text-center mt-20 text-xl">Loading...</div>;
+    
+    return <div className='flex flex-col justify-center items-center w-screen h-screen'><CircularProgress size={40} /></div>;
+    // <div className="text-center mt-20 text-xl">Loading...</div>;
   }
 
   return (
