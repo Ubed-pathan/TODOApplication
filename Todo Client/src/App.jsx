@@ -31,7 +31,7 @@ function MainApp() {
   useEffect(() => {
     async function checkLoginStatus() {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_SERVER_API}/todo/user/status`, {
+        const response = await axios.get(`${import.meta.env.VITE_SERVER_API}/todo/user/status`, {
           withCredentials: true,
         });
         if (response.status === 200) {
@@ -43,7 +43,6 @@ function MainApp() {
           setAuthState({ isLoggedIn: false, userName: null });
         }
       } catch (error) {
-        console.error("Error checking login status:", error);
         setAuthState({ isLoggedIn: false, userName: null });
       } finally {
         setIsLoading(false);

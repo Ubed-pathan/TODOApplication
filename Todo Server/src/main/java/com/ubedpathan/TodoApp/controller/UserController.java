@@ -71,7 +71,7 @@
 //                    cookie.setSameSite(Cookie.SameSite.STRICT);
 
                     response.addCookie(cookie);
-                    response.setHeader("Set-Cookie", "log=" + token + "; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=" + (7 * 24 * 60 * 60));
+                    response.setHeader("Set-Cookie", "log=" + token + "; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=" + (7 * 24 * 60 * 60));
 
                     Map<String, String> responseBody = new HashMap<>();
                     responseBody.put("message", "Login successful");

@@ -43,7 +43,6 @@ function Home() {
 
   useEffect(() => {
     // getRefreshData(setTodos, setToggle, toggle);
-    console.log("home",import.meta.env.VITE_SERVER_API)
     axios.get(`${import.meta.env.VITE_SERVER_API}/todo/home`, {
       // headers: {
       //   Authorization: `Bearer ${localStorage.getItem('authToken')}`,
